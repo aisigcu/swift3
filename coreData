@@ -1,0 +1,53 @@
+/*
+	File -> New -> Project...	
+	Use Core Data 
+	Open **PROJECTNAME**.xcdatamodeld
+	Add an entity (in this example called 'MyCoreDataEntity')
+	Add an attribute (in this example a String called 'name')
+	Editor -> Create NSManagedObjectSubclass...
+	Use the following code in any Swift Class
+*/
+
+/* Gets the context */
+func getContext () -> NSManagedObjectContext {
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    return appDelegate.persistentContainer.viewContext
+}
+
+/* Stores an entry */
+func storeMyCoreDataEntity (nome: String) {
+    let context = getContext()
+    let entity  = NSEntityDescription.entity(forEntityName: "MyCoreDataEntity", in: context)
+    let transc  = NSManagedObject(entity: entity!, insertInto: context)
+    
+    // here we set the entity's values...
+    transc.setValue(nome, forKey: "name")
+    
+    do {
+        try context.save()
+        print("Saved!")
+    }
+    catch let error as NSError  {
+        print("Could not save \(error), \(error.userInfo)")
+    }
+    catch {
+    }
+}
+
+/* Gets the entities */
+func getMyCoreDataEntities () {
+    let fetchRequest: NSFetchRequest<MyCoreDataEntity> = MyCoreDataEntity.fetchRequest()
+    
+    do {
+        let searchResults = try getContext().fetch(fetchRequest)
+        
+        print ("num of results = \(searchResults.count)")
+        
+        for MyCoreDataEntity in searchResults as [MyCoreDataEntity] {
+            print("\(MyCoreDataEntity.name)")
+        }
+    }
+    catch {
+        print("Error with request: \(error)")
+    }
+}
